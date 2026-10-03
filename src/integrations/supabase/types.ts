@@ -14,7 +14,48 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      candidates: {
+        Row: {
+          availability: string
+          bio: string
+          created_at: string
+          hourly_rate: number
+          id: string
+          location: string
+          match_score: number | null
+          name: string
+          role: string
+          skills: string[]
+          uncertainty_note: string | null
+        }
+        Insert: {
+          availability: string
+          bio: string
+          created_at?: string
+          hourly_rate: number
+          id?: string
+          location: string
+          match_score?: number | null
+          name: string
+          role: string
+          skills?: string[]
+          uncertainty_note?: string | null
+        }
+        Update: {
+          availability?: string
+          bio?: string
+          created_at?: string
+          hourly_rate?: number
+          id?: string
+          location?: string
+          match_score?: number | null
+          name?: string
+          role?: string
+          skills?: string[]
+          uncertainty_note?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
