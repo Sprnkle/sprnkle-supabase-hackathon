@@ -122,8 +122,8 @@ function Permissions() {
   );
 }
 
-function MatchResult({ onTrial }: { onTrial: () => void }) {
-  const m = MAYA;
+function MatchResult({ match, onTrial }: { match: MatchData; onTrial: () => void }) {
+  const m = match.top;
   return (
     <div className="animate-rise space-y-6">
       <p className="eyebrow">Best match found</p>
@@ -182,7 +182,7 @@ function MatchResult({ onTrial }: { onTrial: () => void }) {
       <section className="panel p-6">
         <p className="eyebrow mb-3">Also considered</p>
         <ul className="space-y-2 text-sm">
-          {RUNNERS_UP.map((r) => (
+          {match.runnersUp.map((r) => (
             <li key={r.name} className="flex justify-between gap-4"><span>{r.name} <span className="text-muted-foreground">— {r.note}</span></span><span className="font-mono">{r.alignment}%</span></li>
           ))}
         </ul>
@@ -197,9 +197,9 @@ function MatchResult({ onTrial }: { onTrial: () => void }) {
   );
 }
 
-function ApprovalPanel({ brief, onCancel }: { brief: string; onCancel: () => void }) {
+function ApprovalPanel({ brief, match, onCancel }: { brief: string; match: MatchData; onCancel: () => void }) {
   const navigate = useNavigate();
-  const rows = [["Candidate", MAYA.name], ["Project", TRIAL.project], ["Duration", TRIAL.duration], ["Budget", `$${TRIAL.amount}`]];
+  const rows = [["Candidate", match.top.name], ["Project", TRIAL.project], ["Duration", TRIAL.duration], ["Budget", `$${TRIAL.amount}`]];
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm">
       <div className="panel w-full max-w-lg animate-rise overflow-hidden">
@@ -211,9 +211,9 @@ function ApprovalPanel({ brief, onCancel }: { brief: string; onCancel: () => voi
           </dl>
           <p className="eyebrow mb-2 mt-6">The agent recommends this trial because</p>
           <ul className="space-y-1.5 text-sm">
-            <li className="flex gap-2"><Check className="h-4 w-4 text-success" />4 / 4 required capabilities align</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 text-success" />3 are evidence-backed</li>
-            <li className="flex gap-2"><Check className="h-4 w-4 text-success" />Working style fits the collaboration brief</li>
+            {match.reasons.map((r) => (
+              <li key={r} className="flex gap-2"><Check className="h-4 w-4 shrink-0 text-success" />{r}</li>
+            ))}
           </ul>
           <p className="mt-6 rounded-lg bg-secondary p-3 text-sm"><ShieldCheck className="mr-1.5 inline h-4 w-4" />Human approval is required before payment.</p>
           <div className="mt-6 flex justify-end gap-3">
