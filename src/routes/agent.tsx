@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { AlertTriangle, Check, CircleDashed, Loader2, ShieldCheck, X } from "lucide-react";
 import { BrandMark, Fingerprint } from "@/components/passport/Fingerprint";
 import { AGENT_STEPS, DEMO_BRIEF, MAYA, RUNNERS_UP, TRAITS, TRIAL } from "@/lib/demo-data";
+import { matchCandidates, type MatchResult as MatchData } from "@/lib/match.functions";
 
 export const Route = createFileRoute("/agent")({
   head: () => ({
