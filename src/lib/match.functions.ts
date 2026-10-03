@@ -65,20 +65,21 @@ Pick the single best match and rank the rest. Respond with ONLY valid JSON in th
   "reasons": string[] (exactly 3 short bullet reasons the top match fits the brief)
 }`;
 
-    const res = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const res = await fetch("https://ai.gateway.lovable.dev/v1/messages", {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", "anthropic-version": "2023-06-01" },
       body: JSON.stringify({
         model: "anthropic/claude-sonnet-5",
+        max_tokens: 2000,
         messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" },
       }),
     });
     if (!res.ok) throw new Error(`AI gateway error: ${res.status}`);
 
     const json = await res.json();
-    const text: string = json.choices?.[0]?.message?.content ?? "";
-    const parsed = JSON.parse(text) as MatchResult;
+    const text: string = (json.content ?? []).filter((b: { type: string }) => b.type === "text").map((b: { text: string }) => b.text).join("");
+    const jsonText = text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1);
+    const parsed = JSON.parse(jsonText) as MatchResult;
 
     const topDb = (candidates as DbCandidate[]).find((c) => c.name === parsed.top.name);
     parsed.top.id = topDb?.id ?? parsed.top.name.toLowerCase().replace(/\s+/g, "-");
