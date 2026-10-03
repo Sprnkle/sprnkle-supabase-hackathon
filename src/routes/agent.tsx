@@ -23,6 +23,7 @@ function AgentWorkspace() {
   const [brief, setBrief] = useState(DEMO_BRIEF);
   const [step, setStep] = useState(0);
   const [approving, setApproving] = useState(false);
+  const [match, setMatch] = useState<MatchData | null>(null);
   const done = step >= AGENT_STEPS.length;
 
   useEffect(() => {
@@ -34,6 +35,14 @@ function AgentWorkspace() {
     const t = setTimeout(() => setStep((s) => s + 1), 750);
     return () => clearTimeout(t);
   }, [step, done]);
+  useEffect(() => {
+    if (!done || match) return;
+    let cancelled = false;
+    matchCandidates({ data: { brief } })
+      .then((r) => { if (!cancelled) setMatch(r); })
+      .catch(() => { if (!cancelled) setMatch({ top: MAYA, runnersUp: RUNNERS_UP, reasons: ["4 / 4 required capabilities align", "3 are evidence-backed", "Working style fits the collaboration brief"] }); });
+    return () => { cancelled = true; };
+  }, [done, match, brief]);
 
   return (
     <div className="min-h-screen">
@@ -66,12 +75,19 @@ function AgentWorkspace() {
           </section>
         </aside>
 
-        <main>{done ? <MatchResult onTrial={() => setApproving(true)} /> : <Working step={step} />}</main>
+        <main>
+          {!done ? <Working step={step} /> : !match ? (
+            <div className="panel flex min-h-[560px] flex-col items-center justify-center gap-4 p-10 text-center">
+              <Loader2 className="h-8 w-8 animate-spin" />
+              <p className="font-display text-2xl">Claude is ranking the candidates…</p>
+            </div>
+          ) : <MatchResult match={match} onTrial={() => setApproving(true)} />}
+        </main>
 
         <aside><Permissions /></aside>
       </div>
 
-      {approving && <ApprovalPanel brief={brief} onCancel={() => setApproving(false)} />}
+      {approving && match && <ApprovalPanel brief={brief} match={match} onCancel={() => setApproving(false)} />}
     </div>
   );
 }
