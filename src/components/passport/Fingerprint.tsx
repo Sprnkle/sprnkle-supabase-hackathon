@@ -6,7 +6,7 @@ export function Fingerprint({ traits, size = 160 }: { traits?: Record<TraitKey, 
   return (
     <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} aria-hidden>
       {TRAITS.map((t, i) => {
-        const r = c - 6 - i * (size / 18);
+        const r = Math.max(c - 6 - i * ((c - 8) / (TRAITS.length - 1)), 1.5);
         const circ = 2 * Math.PI * r;
         const v = traits ? traits[t.key] : 0.55 + ((i * 37) % 40) / 100;
         return (
